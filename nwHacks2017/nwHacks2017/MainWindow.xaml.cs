@@ -74,23 +74,23 @@ namespace nwHacks2017
             return lineRects;
         }
 
-        private void testBtn_Click(object sender, RoutedEventArgs e)
-        {
-            List<Rect> rects = getTextLineRects();
+        //private void testBtn_Click(object sender, RoutedEventArgs e)
+        //{
+        //    List<Rect> rects = getTextLineRects();
 
-            int count = 0;
+        //    int count = 0;
 
-            foreach (var r in rects)
-            {
-                Rectangle rect = new Rectangle();
-                rect.Stroke = new SolidColorBrush(Colors.Black);
-                rect.Width = r.Width;
-                rect.Height = r.Height;
-                Canvas.SetLeft(rect, 0);
-                Canvas.SetTop(rect, r.Height * count++);
-                Test_Canvas.Children.Add(rect);
-            }
-        }
+        //    foreach (var r in rects)
+        //    {
+        //        Rectangle rect = new Rectangle();
+        //        rect.Stroke = new SolidColorBrush(Colors.Black);
+        //        rect.Width = r.Width;
+        //        rect.Height = r.Height;
+        //        Canvas.SetLeft(rect, 0);
+        //        Canvas.SetTop(rect, r.Height * count++);
+        //        Test_Canvas.Children.Add(rect);
+        //    }
+        //}
 
         private async void openFileBtn_Click(object sender, RoutedEventArgs e)
         {
@@ -125,9 +125,8 @@ namespace nwHacks2017
             }
         }
 
-        private void finishBtn_Click(object sender, RoutedEventArgs e)
+        private void submitBtn_Click(object sender, RoutedEventArgs e)
         {
-            //resetBtn_Click(sender, e);
             startBtn.IsEnabled = true;
             EyeXValues.s_Wpf.Dispose();
             previousTime = 0;
@@ -139,17 +138,6 @@ namespace nwHacks2017
             elapsedTime.Text = "Time: " + durationTimer.Elapsed;
             durationTimer.Reset();
             Console.WriteLine("The Elapsed event was raised at {0}", durationTimer.Elapsed);
-        }
-
-        private void resetBtn_Click(object sender, RoutedEventArgs e)
-        {
-            startBtn.IsEnabled = true;
-            EyeXValues.s_Wpf.Dispose();
-            previousTime = 0;
-            previousEllipses.Clear();
-            previousLines.Clear();
-            previousPoints.Clear();
-            clearPointsFromCanvas();
         }
 
         private void clearPointsFromCanvas()
@@ -230,7 +218,5 @@ namespace nwHacks2017
                 previousTime = currentTime;
             };
         }
-
-
     }
 }

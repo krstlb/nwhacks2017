@@ -16,7 +16,7 @@
         FontFamily="{DynamicResource MaterialDesignFont}"
         
         ResizeMode="NoResize"
-        Title="MainWindow" Width="1280" Height="720" WindowState="Maximized">
+        Title="Code Eye" Width="1280" Height="720" WindowState="Maximized">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
@@ -35,24 +35,37 @@
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="2*" />
+                <ColumnDefinition Width="0.5*"/>
+                <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
-            <Button Grid.Column="0" x:Name="openFileBtn" Content="Select File" Click="openFileBtn_Click" Height="Auto" Margin="40,20,20,20" Padding="16" FontFamily="Roboto" FontSize="18"/>
-            <Button Grid.Column="1" x:Name="startBtn" Content="Start" Click="startBtn_Click" Padding="16" Height="Auto" Margin="20" FontSize="20"/>
-            <Button Grid.Column="2" x:Name="finishBtn" Content="Finish" Click="finishBtn_Click" Height="Auto" Padding="16" Margin="20" FontSize="20"/>
-            <Button Grid.Column="3" x:Name="testBtn" Content="test" Click="testBtn_Click" Height="Auto" Padding="16" Margin="20" FontSize="20"/>
+            <Grid Grid.Row="0" Margin="40,15,0,15">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
 
-            <materialDesign:Card Grid.Column="4" x:Name="timeCard" Padding="30" VerticalAlignment="Stretch" FontSize="20" Margin="10,10,20,10">
+                <Button Grid.Column="0" x:Name="openFileBtn" Content="Select File" Click="openFileBtn_Click" Height="Auto" FontFamily="Roboto" FontSize="16" Margin="0,5,5,5"/>
+
+                <Button Grid.Column="1" x:Name="startBtn" Content="Start" Click="startBtn_Click" Height="Auto" FontSize="16" Margin="0,5,5,5"/>
+            </Grid>
+
+            <TextBox Grid.Column="1" Margin="10,20" FontSize="16" FontFamily="Roboto Mono" materialDesign:HintAssist.Hint="Enter the output here...">
+
+            </TextBox>
+
+            <Button Grid.Column="2" x:Name="submitBtn" Content="Submit" Click="submitBtn_Click" Height="Auto" FontSize="16" Margin="10,20,5,20"/>
+
+            <materialDesign:Card Grid.Column="3" x:Name="timeCard" Padding="30" VerticalAlignment="Stretch" FontSize="20" Margin="10,10,20,10">
                 <TextBlock x:Name="elapsedTime" Padding="0" Style="{DynamicResource MaterialDesignTitleTextBlock}" FontFamily="Roboto" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center">Not Run</TextBlock>
             </materialDesign:Card >
-
         </Grid>
     </Grid>
 </Window>
