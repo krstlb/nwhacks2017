@@ -1,4 +1,5 @@
-﻿using System;
+﻿using nwHacks2017;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
@@ -35,50 +36,59 @@ namespace nwHacks2017
             InitializeComponent();
         }
 
-        private void getLineHeightCoordinates()
+        private List<Rect> getTextLineRects()
         {
-            // get position of text block
-            // count number of new lines in text block
-            // return array of pairs of y coordinates, each pair
-        }
+            List<Rect> lineRects = new List<Rect>();
 
-        private Size GetScreenSize(string text, FontFamily fontFamily, double fontSize, FontStyle fontStyle, FontWeight fontWeight, FontStretch fontStretch)
-        {
-            fontFamily = fontFamily ?? new TextBlock().FontFamily;
-            fontSize = fontSize > 0 ? fontSize : new TextBlock().FontSize;
-            var typeface = new Typeface(fontFamily, fontStyle, fontWeight, fontStretch);
-            var ft = new FormattedText(text ?? string.Empty, CultureInfo.CurrentCulture, FlowDirection.LeftToRight, typeface, fontSize, Brushes.Black);
-            return new Size(ft.Width, ft.Height);
+            // get text origin
+            Rect textBoundingBox = new Rect(textField.RenderSize);
+
+            // get the font size info
+            double fontHeight = textField.FontSize * textField.FontFamily.LineSpacing;
+            double charWidth = "X".GetScreenSize(textField.FontFamily, textField.FontSize, textField.FontStyle, textField.FontWeight, textField.FontStretch).Width;
+
+            // get upper left of actual text accounting for padding
+            Point upperLeft = textBoundingBox.TopLeft;
+            upperLeft.X += textField.Padding.Left;
+            upperLeft.Y += textField.Padding.Top;
+
+            // bottom right, need length of string
+            Point bottomRight = upperLeft;
+            bottomRight.Y += fontHeight;
+
+            string[] lines = textField.Text.Split('\n');
+
+            bottomRight.X = charWidth * lines[0].Length;
+
+            lineRects.Add(new Rect(upperLeft, bottomRight));
+
+            for (int i = 1; i < lines.Length; i++)
+            {
+                upperLeft.Y += fontHeight;
+                bottomRight.Y += fontHeight;
+                bottomRight.X = charWidth * lines[i].Length;
+
+                lineRects.Add(new Rect(upperLeft, bottomRight));
+            }
+
+            return lineRects;
         }
 
         private void testBtn_Click(object sender, RoutedEventArgs e)
         {
-            Rect textBoundingBox = new Rect(textField.RenderSize);
+            List<Rect> rects = getTextLineRects();
 
-            double fontHeight = textField.FontSize * textField.FontFamily.LineSpacing;
-            //double charWidth = GetScreenSize("X", textField.FontFamily, textField.FontSize, textField.FontStyle, textField.FontStretch).Width;
+            int count = 0;
 
-            Point p = textBoundingBox.TopLeft;
-            p.X += textField.Padding.Left;
-            p.Y += textField.Padding.Top;
-
-            string[] lines = textField.Text.Split('\n');
-
-            for (int i = 0; i < lines.Length; i++)
+            foreach (var r in rects)
             {
-                //lines[i].Length * charWidth
-            }
-
-            
-
-            Ellipse ellipse = createFixationEllipse(p);
-            this.Test_Canvas.Children.Add(ellipse);
-
-            for (int i = 0; i < lines.Length; i++)
-            {
-                p.Y += fontHeight;
-                ellipse = createFixationEllipse(p);
-                this.Test_Canvas.Children.Add(ellipse);
+                Rectangle rect = new Rectangle();
+                rect.Stroke = new SolidColorBrush(Colors.Black);
+                rect.Width = r.Width;
+                rect.Height = r.Height;
+                Canvas.SetLeft(rect, 0);
+                Canvas.SetTop(rect, r.Height * count++);
+                Test_Canvas.Children.Add(rect);
             }
         }
 
