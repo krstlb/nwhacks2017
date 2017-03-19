@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -32,6 +33,53 @@ namespace nwHacks2017
         public MainWindow()
         {
             InitializeComponent();
+        }
+
+        private void getLineHeightCoordinates()
+        {
+            // get position of text block
+            // count number of new lines in text block
+            // return array of pairs of y coordinates, each pair
+        }
+
+        private Size GetScreenSize(string text, FontFamily fontFamily, double fontSize, FontStyle fontStyle, FontWeight fontWeight, FontStretch fontStretch)
+        {
+            fontFamily = fontFamily ?? new TextBlock().FontFamily;
+            fontSize = fontSize > 0 ? fontSize : new TextBlock().FontSize;
+            var typeface = new Typeface(fontFamily, fontStyle, fontWeight, fontStretch);
+            var ft = new FormattedText(text ?? string.Empty, CultureInfo.CurrentCulture, FlowDirection.LeftToRight, typeface, fontSize, Brushes.Black);
+            return new Size(ft.Width, ft.Height);
+        }
+
+        private void testBtn_Click(object sender, RoutedEventArgs e)
+        {
+            Rect textBoundingBox = new Rect(textField.RenderSize);
+
+            double fontHeight = textField.FontSize * textField.FontFamily.LineSpacing;
+            //double charWidth = GetScreenSize("X", textField.FontFamily, textField.FontSize, textField.FontStyle, textField.FontStretch).Width;
+
+            Point p = textBoundingBox.TopLeft;
+            p.X += textField.Padding.Left;
+            p.Y += textField.Padding.Top;
+
+            string[] lines = textField.Text.Split('\n');
+
+            for (int i = 0; i < lines.Length; i++)
+            {
+                //lines[i].Length * charWidth
+            }
+
+            
+
+            Ellipse ellipse = createFixationEllipse(p);
+            this.Test_Canvas.Children.Add(ellipse);
+
+            for (int i = 0; i < lines.Length; i++)
+            {
+                p.Y += fontHeight;
+                ellipse = createFixationEllipse(p);
+                this.Test_Canvas.Children.Add(ellipse);
+            }
         }
 
         private async void openFileBtn_Click(object sender, RoutedEventArgs e)
@@ -172,5 +220,7 @@ namespace nwHacks2017
                 previousTime = currentTime;
             };
         }
+
+
     }
 }
