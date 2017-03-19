@@ -23,7 +23,9 @@ namespace nwHacks2017
     {
         Stopwatch durationTimer = new Stopwatch();
         Queue<Ellipse> previousPoints = new Queue<Ellipse>();
-
+        int secondsSinceEpoch = (int)(DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalMilliseconds;
+        int previousTime = 0;
+        const int TIME_OUT = 500;
         public MainWindow()
         {
             InitializeComponent();
@@ -89,8 +91,8 @@ namespace nwHacks2017
 
             Point screenPoint = this.Test_Canvas.PointFromScreen(p);
             Ellipse ellipse = new Ellipse();
-            ellipse.Width = 4;
-            ellipse.Height = 4;
+            ellipse.Width = 7;
+            ellipse.Height = 7;
             ellipse.Fill = new SolidColorBrush(Colors.Red);
             Canvas.SetLeft(ellipse, screenPoint.X);
             Canvas.SetTop(ellipse, screenPoint.Y);
@@ -107,27 +109,24 @@ namespace nwHacks2017
             EyeXValues.s_Wpf.Start();
             gazedDataStream.Next += (s, eyeLocation) =>
             {
-<<<<<<< Updated upstream
-                Point screenPoint = this.Test_Canvas.PointFromScreen(new Point(eyeLocation.X, eyeLocation.Y));
-                // Console.WriteLine("Gaze point at ({0:0.0}, {1:0.0}) @{2:0}, {0:0.0}", screenPoint.X, screenPoint.Y, eyeLocation.Timestamp);
-                Ellipse ellipse = new Ellipse();
-                ellipse.Width = 4;
-                ellipse.Height = 4;
-                ellipse.Fill = new SolidColorBrush(Colors.Red);
-                Canvas.SetLeft(ellipse, screenPoint.X);
-                Canvas.SetTop(ellipse, screenPoint.Y);
-=======
-                Point eyePoint = new Point(eyeLocation.X, eyeLocation.Y);
-                // Console.WriteLine("Gaze point at ({0:0.0}, {1:0.0}) @{2:0}, {0:0.0}", screenPoint.X, screenPoint.Y, eyeLocation.Timestamp);
-                Ellipse ellipse = createFixationEllipse(eyePoint);
->>>>>>> Stashed changes
-                this.Test_Canvas.Children.Add(ellipse);
-                previousPoints.Enqueue(ellipse);
-
-                if (previousPoints.Count == 3)
+                TimeSpan start = DateTime.Now.TimeOfDay;
+                int currentTime = (int)start.TotalMilliseconds;
+                if (currentTime - previousTime < TIME_OUT)
                 {
-                    Test_Canvas.Children.Remove(previousPoints.Dequeue());
+
+                    Point eyePoint = new Point(eyeLocation.X, eyeLocation.Y);
+                    // Console.WriteLine("Gaze point at ({0:0.0}, {1:0.0}) @{2:0}, {0:0.0}", screenPoint.X, screenPoint.Y, eyeLocation.Timestamp);
+                    Ellipse ellipse = createFixationEllipse(eyePoint);
+                    this.Test_Canvas.Children.Add(ellipse);
+                    previousPoints.Enqueue(ellipse);
+
+                    if (previousPoints.Count == 3)
+                    {
+                        Test_Canvas.Children.Remove(previousPoints.Dequeue());
+                    }
                 }
+
+                previousTime = currentTime;
             };
         }
     }
