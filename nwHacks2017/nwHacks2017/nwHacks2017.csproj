@@ -38,7 +38,7 @@
   <ItemGroup>
     <Reference Include="EyeXFramework, Version=1.8.498.0, Culture=neutral, PublicKeyToken=70326046dcdce6cb, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\lib\x64\EyeXFramework.dll</HintPath>
+      <HintPath>..\EyeXFramework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -51,8 +51,9 @@
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
-    <Reference Include="Tobii.EyeX.Client.Net20">
-      <HintPath>..\lib\x64\Tobii.EyeX.Client.Net20.dll</HintPath>
+    <Reference Include="Tobii.EyeX.Client.Net20, Version=1.8.498.0, Culture=neutral, PublicKeyToken=70326046dcdce6cb, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Tobii.EyeX.Client.Net20.dll</HintPath>
     </Reference>
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
@@ -104,7 +105,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="..\lib\x64\Tobii.EyeX.Client.dll">
+    <Content Include="..\Tobii.EyeX.Client.dll">
       <Link>Tobii.EyeX.Client.dll</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
