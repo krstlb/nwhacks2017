@@ -6,6 +6,16 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:eyeX="clr-namespace:EyeXFramework.Wpf;assembly=EyeXFramework"
+        
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+        TextElement.FontWeight="Regular"
+        TextElement.FontSize="13"
+        TextOptions.TextFormattingMode="Ideal" 
+        TextOptions.TextRenderingMode="Auto"        
+        Background="{DynamicResource MaterialDesignPaper}"
+        FontFamily="{DynamicResource MaterialDesignFont}"
+        
         KeyDown="Window_KeyDown"
         Title="MainWindow" Height="700" Width="800" WindowStartupLocation="CenterScreen">
 
@@ -167,7 +177,7 @@
             </Style.Triggers>
         </Style>
     </Window.Resources>
-    
+
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="10*" />
@@ -180,7 +190,7 @@
             <ColumnDefinition Width="80*" />
             <ColumnDefinition Width="10*" />
         </Grid.ColumnDefinitions>
-        
+
         <!-- Gaze-aware elements -->
         <StackPanel Grid.Row="1" 
                     Grid.Column="1" 
@@ -196,7 +206,7 @@
                     Hello!
                 </TextBlock>
             </Button>
-            
+
         </StackPanel>
 
         <!-- Gaze-aware instruction text block -->
@@ -215,5 +225,6 @@
                        Style="{StaticResource EyeXGazeAwareInstruction}">
             </TextBlock>
         </Border>
+        
     </Grid>
 </Window>
