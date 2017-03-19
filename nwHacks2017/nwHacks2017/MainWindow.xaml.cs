@@ -19,9 +19,6 @@ using Tobii.EyeX.Framework;
 
 namespace nwHacks2017
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
         Stopwatch durationTimer = new Stopwatch();
@@ -67,6 +64,8 @@ namespace nwHacks2017
         {
             EyeXValues.s_Wpf.Dispose();
             durationTimer.Stop();
+            elapsedTime.Text = "Time: " + durationTimer.Elapsed;
+            durationTimer.Reset();
             Console.WriteLine("The Elapsed event was raised at {0}", durationTimer.Elapsed);
         }
 
@@ -80,6 +79,7 @@ namespace nwHacks2017
 
         private void startBtn_Click(object sender, RoutedEventArgs e)
         {
+            elapsedTime.Text = "Time: Running...";
             var gazedDataStream = EyeXValues.s_Wpf.CreateGazePointDataStream(GazePointDataMode.LightlyFiltered);
             durationTimer.Start();
 
@@ -87,7 +87,7 @@ namespace nwHacks2017
             gazedDataStream.Next += (s, eyeLocation) =>
             {
                 Point screenPoint = this.Test_Canvas.PointFromScreen(new Point(eyeLocation.X, eyeLocation.Y));
-               // Console.WriteLine("Gaze point at ({0:0.0}, {1:0.0}) @{2:0}, {0:0.0}", screenPoint.X, screenPoint.Y, eyeLocation.Timestamp);
+                // Console.WriteLine("Gaze point at ({0:0.0}, {1:0.0}) @{2:0}, {0:0.0}", screenPoint.X, screenPoint.Y, eyeLocation.Timestamp);
                 Ellipse ellipse = new Ellipse();
                 ellipse.Width = 4;
                 ellipse.Height = 4;

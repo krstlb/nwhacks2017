@@ -18,17 +18,41 @@
         ResizeMode="NoResize"
         Title="MainWindow" Width="1280" Height="720" WindowState="Maximized">
     <Grid>
-        <materialDesign:Card Padding="30" Margin="15" Height="900" FontSize="20">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="4*" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <materialDesign:Card Grid.Row="0" x:Name="contentCard" Padding="30" Margin="20" FontSize="20" VerticalAlignment="Stretch">
             <Canvas Name="Test_Canvas">
                 <TextBlock x:Name="textField" Padding="15" Style="{DynamicResource MaterialDesignTitleTextBlock}" FontFamily="Roboto Mono" FontSize="20">print 1 + 2</TextBlock>
             </Canvas>
         </materialDesign:Card >
 
-        <Button x:Name="openFileBtn" Content="Select File" HorizontalAlignment="Left" Margin="30" VerticalAlignment="Bottom" Width="100" Click="openFileBtn_Click"/>
-        <Button x:Name="startBtn" Content="Start" HorizontalAlignment="Left" Margin="160,30,30,30" VerticalAlignment="Bottom" Width="100" Click="startBtn_Click"/>
-        <Button x:Name="finishBtn" Content="Finish" HorizontalAlignment="Left" Margin="290,30,30,30" VerticalAlignment="Bottom" Width="100" Click="finishBtn_Click"/>
-        <Button x:Name="resetBtn" Content="Reset" HorizontalAlignment="Left" Margin="420,30,30,30" VerticalAlignment="Bottom" Width="100" Click="resetBtn_Click"/>
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="2*" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
 
+            <Button Grid.Column="0" x:Name="openFileBtn" Content="Select File" VerticalAlignment="Center" Click="openFileBtn_Click" Height="Auto" Margin="20,0,10,0" Padding="16"/>
+            <Button Grid.Column="1" x:Name="startBtn" Content="Start" Click="startBtn_Click" Padding="16" Height="Auto" VerticalAlignment="Center" Margin="10,0"/>
+            <Button Grid.Column="2" x:Name="finishBtn" Content="Finish" VerticalAlignment="Center" Click="finishBtn_Click" Height="Auto" Padding="16" Margin="10,0"/>
+            <Button Grid.Column="3" x:Name="resetBtn" Content="Reset" VerticalAlignment="Center" Click="resetBtn_Click" Height="Auto" Padding="16" Margin="10,0,0,0"/>
 
+            <materialDesign:Card Grid.Column="4" x:Name="timeCard" Padding="30" VerticalAlignment="Stretch" FontSize="20" Margin="20,10">
+                <TextBlock x:Name="elapsedTime" Padding="0" Style="{DynamicResource MaterialDesignTitleTextBlock}" FontFamily="Roboto" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center">Not Run</TextBlock>
+            </materialDesign:Card >
+
+        </Grid>
     </Grid>
 </Window>
