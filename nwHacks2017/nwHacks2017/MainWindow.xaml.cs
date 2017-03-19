@@ -22,10 +22,13 @@ namespace nwHacks2017
     public partial class MainWindow : Window
     {
         Stopwatch durationTimer = new Stopwatch();
-        Queue<Ellipse> previousPoints = new Queue<Ellipse>();
+        Queue<Ellipse> previousEllipses = new Queue<Ellipse>();
+        Queue<Point> previousPoints = new Queue<Point>();
+        Queue<Line> previousLines = new Queue<Line>();
         int secondsSinceEpoch = (int)(DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalMilliseconds;
         int previousTime = 0;
-        const int TIME_OUT = 500;
+        const int TIME_OUT = 750;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -66,7 +69,14 @@ namespace nwHacks2017
 
         private void finishBtn_Click(object sender, RoutedEventArgs e)
         {
+            //resetBtn_Click(sender, e);
+            startBtn.IsEnabled = true;
             EyeXValues.s_Wpf.Dispose();
+            previousTime = 0;
+            previousEllipses.Clear();
+            previousLines.Clear();
+            previousPoints.Clear();
+            clearPointsFromCanvas();
             durationTimer.Stop();
             elapsedTime.Text = "Time: " + durationTimer.Elapsed;
             durationTimer.Reset();
@@ -75,6 +85,12 @@ namespace nwHacks2017
 
         private void resetBtn_Click(object sender, RoutedEventArgs e)
         {
+            startBtn.IsEnabled = true;
+            EyeXValues.s_Wpf.Dispose();
+            previousTime = 0;
+            previousEllipses.Clear();
+            previousLines.Clear();
+            previousPoints.Clear();
             clearPointsFromCanvas();
         }
 
@@ -88,20 +104,19 @@ namespace nwHacks2017
 
         private Ellipse createFixationEllipse(Point p)
         {
-
-            Point screenPoint = this.Test_Canvas.PointFromScreen(p);
             Ellipse ellipse = new Ellipse();
             ellipse.Width = 7;
             ellipse.Height = 7;
             ellipse.Fill = new SolidColorBrush(Colors.Red);
-            Canvas.SetLeft(ellipse, screenPoint.X);
-            Canvas.SetTop(ellipse, screenPoint.Y);
+            Canvas.SetLeft(ellipse, p.X);
+            Canvas.SetTop(ellipse, p.Y);
 
             return ellipse;
         }
         
         private void startBtn_Click(object sender, RoutedEventArgs e)
         {
+            startBtn.IsEnabled = false;
             elapsedTime.Text = "Time: Running...";
             var gazedDataStream = EyeXValues.s_Wpf.CreateGazePointDataStream(GazePointDataMode.LightlyFiltered);
             durationTimer.Start();
@@ -115,14 +130,42 @@ namespace nwHacks2017
                 {
 
                     Point eyePoint = new Point(eyeLocation.X, eyeLocation.Y);
+                    Point screenPoint = this.Test_Canvas.PointFromScreen(eyePoint);
+                    previousPoints.Enqueue(screenPoint);
                     // Console.WriteLine("Gaze point at ({0:0.0}, {1:0.0}) @{2:0}, {0:0.0}", screenPoint.X, screenPoint.Y, eyeLocation.Timestamp);
-                    Ellipse ellipse = createFixationEllipse(eyePoint);
+                    Ellipse ellipse = createFixationEllipse(screenPoint);
                     this.Test_Canvas.Children.Add(ellipse);
-                    previousPoints.Enqueue(ellipse);
+                    previousEllipses.Enqueue(ellipse);
 
-                    if (previousPoints.Count == 3)
+                    if (previousEllipses.Count == 3)
                     {
-                        Test_Canvas.Children.Remove(previousPoints.Dequeue());
+                        Test_Canvas.Children.Remove(previousEllipses.Dequeue());
+                        previousPoints.Dequeue();
+                        if (previousLines.Count != 0)
+                        {
+                            Test_Canvas.Children.Remove(previousLines.Dequeue());
+                        }
+                    }
+
+                    Point previous = previousPoints.Peek();
+                    foreach (Point p in previousPoints)
+                    {
+                      
+                        if(p != previous)
+                        {
+                            Line line = new Line();
+                            line.Stroke = Brushes.DarkRed;
+                            line.X1 = previous.X;
+                            line.Y1 = previous.Y;
+                            line.X2 = p.X;
+                            line.Y2 = p.Y;
+                            line.StrokeThickness = 3;
+
+                            previousLines.Enqueue(line);
+                            Test_Canvas.Children.Add(line);
+                        }
+
+                        previous = p;
                     }
                 }
 
