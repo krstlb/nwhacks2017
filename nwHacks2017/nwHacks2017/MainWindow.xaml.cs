@@ -11,6 +11,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
+using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -22,6 +23,7 @@ namespace nwHacks2017
 {
     public partial class MainWindow : Window
     {
+        static int BIN_SIZE = 10;
         Stopwatch durationTimer = new Stopwatch();
         Queue<Ellipse> previousEllipses = new Queue<Ellipse>();
         Queue<Point> previousPoints = new Queue<Point>();
@@ -29,6 +31,9 @@ namespace nwHacks2017
         int secondsSinceEpoch = (int)(DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalMilliseconds;
         int previousTime = 0;
         const int TIME_OUT = 750;
+        // Set a variable to the My Documents path.
+        static string mydocpath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+        System.IO.StreamWriter dataStreamFile = new System.IO.StreamWriter(mydocpath + @"\data-stream.txt");
 
         public MainWindow()
         {
@@ -42,14 +47,14 @@ namespace nwHacks2017
             // return array of pairs of y coordinates, each pair
         }
 
-        private Size GetScreenSize(string text, FontFamily fontFamily, double fontSize, FontStyle fontStyle, FontWeight fontWeight, FontStretch fontStretch)
-        {
-            fontFamily = fontFamily ?? new TextBlock().FontFamily;
-            fontSize = fontSize > 0 ? fontSize : new TextBlock().FontSize;
-            var typeface = new Typeface(fontFamily, fontStyle, fontWeight, fontStretch);
-            var ft = new FormattedText(text ?? string.Empty, CultureInfo.CurrentCulture, FlowDirection.LeftToRight, typeface, fontSize, Brushes.Black);
-            return new Size(ft.Width, ft.Height);
-        }
+        //private Size GetScreenSize(string text, FontFamily fontFamily, double fontSize, FontStyle fontStyle, FontWeight fontWeight, FontStretch fontStretch)
+        //{
+        //    fontFamily = fontFamily ?? new TextBlock().FontFamily;
+        //    fontSize = fontSize > 0 ? fontSize : new TextBlock().FontSize;
+        //    var typeface = new Typeface(fontFamily, fontStyle, fontWeight, fontStretch);
+        //    var ft = new FormattedText(text ?? string.Empty, CultureInfo.CurrentCulture, FlowDirection.LeftToRight, typeface, fontSize, Brushes.Black);
+        //    return new Size(ft.Width, ft.Height);
+        //}
 
         private void testBtn_Click(object sender, RoutedEventArgs e)
         {
@@ -69,7 +74,7 @@ namespace nwHacks2017
                 //lines[i].Length * charWidth
             }
 
-            
+
 
             Ellipse ellipse = createFixationEllipse(p);
             this.Test_Canvas.Children.Add(ellipse);
@@ -117,6 +122,7 @@ namespace nwHacks2017
 
         private void finishBtn_Click(object sender, RoutedEventArgs e)
         {
+            dataStreamFile.Close();
             //resetBtn_Click(sender, e);
             startBtn.IsEnabled = true;
             EyeXValues.s_Wpf.Dispose();
@@ -129,6 +135,7 @@ namespace nwHacks2017
             elapsedTime.Text = "Time: " + durationTimer.Elapsed;
             durationTimer.Reset();
             Console.WriteLine("The Elapsed event was raised at {0}", durationTimer.Elapsed);
+            generateHeapMap();
         }
 
         private void resetBtn_Click(object sender, RoutedEventArgs e)
@@ -161,9 +168,10 @@ namespace nwHacks2017
 
             return ellipse;
         }
-        
+
         private void startBtn_Click(object sender, RoutedEventArgs e)
         {
+
             startBtn.IsEnabled = false;
             elapsedTime.Text = "Time: Running...";
             var gazedDataStream = EyeXValues.s_Wpf.CreateGazePointDataStream(GazePointDataMode.LightlyFiltered);
@@ -181,6 +189,12 @@ namespace nwHacks2017
                     Point screenPoint = this.Test_Canvas.PointFromScreen(eyePoint);
                     previousPoints.Enqueue(screenPoint);
                     // Console.WriteLine("Gaze point at ({0:0.0}, {1:0.0}) @{2:0}, {0:0.0}", screenPoint.X, screenPoint.Y, eyeLocation.Timestamp);
+                    if (screenPoint.X > 0 && screenPoint.Y > 0)
+                    {
+                        String dataLog = screenPoint.X + " " + screenPoint.Y;
+                        dataStreamFile.WriteLine(dataLog);
+                    }
+
                     Ellipse ellipse = createFixationEllipse(screenPoint);
                     this.Test_Canvas.Children.Add(ellipse);
                     previousEllipses.Enqueue(ellipse);
@@ -198,8 +212,8 @@ namespace nwHacks2017
                     Point previous = previousPoints.Peek();
                     foreach (Point p in previousPoints)
                     {
-                      
-                        if(p != previous)
+
+                        if (p != previous)
                         {
                             Line line = new Line();
                             line.Stroke = Brushes.DarkRed;
@@ -221,6 +235,57 @@ namespace nwHacks2017
             };
         }
 
+        async private void generateHeapMap()
+        {
+            int[,] binValues = createBinValues();
+            string mydocpath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            System.IO.StreamWriter dataBinFile = new System.IO.StreamWriter(mydocpath + @"\data-bin.txt");
+            String output = "";
 
+            int counter = 0;
+            string line;
+
+            // Read the file line by line and bin the frequency of coordinates.
+            System.IO.StreamReader file = new System.IO.StreamReader(mydocpath + @"\data-stream.txt");
+
+            while ((line = file.ReadLine()) != null)
+            {
+                Console.WriteLine(line);
+                counter++;
+
+                string[] words = line.Split(' ');
+                foreach (string word in words)
+                {
+                    int binX = Convert.ToInt32(words[0]) / BIN_SIZE; // x
+                    int binY = Convert.ToInt32(words[1]) / BIN_SIZE; // y
+
+                    binValues[binX, binY] += 1;
+                }
+            }
+
+            for (int i = 0; i < binValues.GetUpperBound(0); i++)
+            {
+                for (int j = 0; j < binValues.GetUpperBound(1); j++)
+                {
+                    output += binValues[i, j] + " ";
+                }
+                output += "\n";
+            }
+
+            dataBinFile.Write(output);
+
+            dataBinFile.Close();
+            file.Close();
+        }
+
+        private int[,] createBinValues()
+        {
+            int screenWidth = Screen.PrimaryScreen.Bounds.Width;
+            int screenHeight = Screen.PrimaryScreen.Bounds.Height;
+
+            int[,] binValues = new int[screenWidth / BIN_SIZE, screenHeight / BIN_SIZE]; // 1920x1080 
+
+            return binValues;
+        }
     }
 }
