@@ -11,7 +11,7 @@ namespace GazeAwareElements
         private bool _showInstruction;
 
         public event PropertyChangedEventHandler PropertyChanged;
-         
+
         public MainWindowModel()
         {
             ShowInstruction = false;
