@@ -8,24 +8,13 @@ using System.Windows;
 
 namespace nwHacks2017
 {
-
     using System.Windows;
     using EyeXFramework.Wpf;
-    using Tobii.EyeX.Framework;
-    using System.Diagnostics;
-    using System.Windows.Media;
-    using System.Windows.Controls;
 
-    /// <summary>
-    /// Interaction logic for App.xaml
-    /// </summary>
     public partial class App : Application
     {
-
         public App()
-        {
-           
-        }
+        {}
 
         protected override void OnExit(ExitEventArgs e)
         {
@@ -38,5 +27,4 @@ namespace nwHacks2017
     {
         public static WpfEyeXHost s_Wpf = new WpfEyeXHost();
     }
-
 }

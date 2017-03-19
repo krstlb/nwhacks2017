@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Timers;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -22,35 +24,10 @@ namespace nwHacks2017
     /// </summary>
     public partial class MainWindow : Window
     {
+        Stopwatch durationTimer = new Stopwatch();
         public MainWindow()
         {
             InitializeComponent();
-
-            var gazedDataStream = EyeXValues.s_Wpf.CreateGazePointDataStream(GazePointDataMode.LightlyFiltered);
-
-            TextBlock textBlock = new TextBlock();
-            textBlock.Text = "Hello World ajshdkajhsdkjahsdkjahsdkjahdkjhaksjdhkajsdhkashdkajsdhkasjdhaksjdhaksjdhkajshdkajshdkajshdkjashdkhaskdjhakhsd";
-            textBlock.Foreground = new SolidColorBrush(Colors.Black);
-            Canvas.SetLeft(textBlock, 500);
-            Canvas.SetTop(textBlock, 500);
-            this.Test_Canvas.Children.Add(textBlock);
-
-            EyeXValues.s_Wpf.Start();
-            gazedDataStream.Next += (s, e) =>
-            {
-                Point screenPoint = this.Test_Canvas.PointToScreen(new Point(e.X, e.Y));
-                Console.WriteLine("Gaze point at ({0:0.0}, {1:0.0}) @{2:0}, {0:0.0}", screenPoint.X, screenPoint.Y, e.Timestamp);
-                Ellipse ellipse = new Ellipse();
-                ellipse.Width = 4;
-                ellipse.Height = 4;
-                ellipse.Fill = new SolidColorBrush(Colors.Red);
-                Canvas.SetLeft(ellipse, screenPoint.X);
-                Canvas.SetTop(ellipse, screenPoint.Y);
-                this.Test_Canvas.Children.Add(ellipse);
-            };
-
-            Console.WriteLine("Listening for gaze data, press any key to exit...");
-            Console.In.Read();
         }
 
         private async void openFileBtn_Click(object sender, RoutedEventArgs e)
@@ -88,17 +65,37 @@ namespace nwHacks2017
 
         private void finishBtn_Click(object sender, RoutedEventArgs e)
         {
-
+            EyeXValues.s_Wpf.Dispose();
+            durationTimer.Stop();
+            Console.WriteLine("The Elapsed event was raised at {0}", durationTimer.Elapsed);
         }
 
         private void resetBtn_Click(object sender, RoutedEventArgs e)
         {
+            TextBlock t = textField;
+            this.Test_Canvas.Children.Clear();
 
+            Test_Canvas.Children.Add(t);
         }
 
         private void startBtn_Click(object sender, RoutedEventArgs e)
         {
+            var gazedDataStream = EyeXValues.s_Wpf.CreateGazePointDataStream(GazePointDataMode.LightlyFiltered);
+            durationTimer.Start();
 
+            EyeXValues.s_Wpf.Start();
+            gazedDataStream.Next += (s, eyeLocation) =>
+            {
+                Point screenPoint = this.Test_Canvas.PointFromScreen(new Point(eyeLocation.X, eyeLocation.Y));
+               // Console.WriteLine("Gaze point at ({0:0.0}, {1:0.0}) @{2:0}, {0:0.0}", screenPoint.X, screenPoint.Y, eyeLocation.Timestamp);
+                Ellipse ellipse = new Ellipse();
+                ellipse.Width = 4;
+                ellipse.Height = 4;
+                ellipse.Fill = new SolidColorBrush(Colors.Red);
+                Canvas.SetLeft(ellipse, screenPoint.X);
+                Canvas.SetTop(ellipse, screenPoint.Y);
+                this.Test_Canvas.Children.Add(ellipse);
+            };
         }
     }
 }

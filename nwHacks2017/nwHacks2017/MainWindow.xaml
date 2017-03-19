@@ -18,9 +18,9 @@
         ResizeMode="NoResize"
         Title="MainWindow" Width="1280" Height="720" WindowState="Maximized">
     <Grid>
-        <materialDesign:Card Padding="30" Margin="15" Height="600">
+        <materialDesign:Card Padding="30" Margin="15" Height="900" FontSize="20">
             <Canvas Name="Test_Canvas">
-                <TextBlock x:Name="textField" Style="{DynamicResource MaterialDesignTitleTextBlock}" FontFamily="Roboto Mono" FontSize="14">print 1 + 2</TextBlock>
+                <TextBlock x:Name="textField" Padding="15" Style="{DynamicResource MaterialDesignTitleTextBlock}" FontFamily="Roboto Mono" FontSize="20">print 1 + 2</TextBlock>
             </Canvas>
         </materialDesign:Card >
 
